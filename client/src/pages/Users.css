@@ -1,0 +1,104 @@
+.users-page {
+  min-height: 100vh;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #333;
+}
+
+.static-section,
+.dynamic-section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.static-section:last-child,
+.dynamic-section:last-child {
+  border-bottom: none;
+}
+
+.static-section h2,
+.dynamic-section h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.static-section p,
+.dynamic-section p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.role-readonly {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.role-admin {
+  background-color: #fff3e0;
+  color: #f57c00;
+}
+
+.role-superadmin {
+  background-color: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 5px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
