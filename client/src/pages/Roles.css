@@ -1,0 +1,91 @@
+.roles-page {
+  min-height: 100vh;
+}
+
+.static-section,
+.dynamic-section,
+.superadmin-section {
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.static-section:last-child,
+.dynamic-section:last-child,
+.superadmin-section:last-child {
+  border-bottom: none;
+}
+
+.static-section h2,
+.dynamic-section h2,
+.superadmin-section h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.static-section p,
+.dynamic-section p,
+.superadmin-section p {
+  color: #666;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+.superadmin-section {
+  background-color: #f3e5f5;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #7b1fa2;
+}
+
+.permissions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.permission-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
