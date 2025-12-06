@@ -1,0 +1,30 @@
+{
+  "name": "my-fullstack-project",
+  "version": "1.0.0",
+  "description": "Full-stack web application with Node.js backend and React frontend",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=server\" \"npm run dev --workspace=client\"",
+    "install:all": "npm install && npm install --workspace=client && npm install --workspace=server",
+    "build": "npm run build --workspace=client",
+    "start": "npm run start --workspace=server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "nodejs",
+    "react",
+    "mysql",
+    "authentication",
+    "roles",
+    "permissions"
+  ],
+  "author": "",
+  "license": "ISC"
+}
+
