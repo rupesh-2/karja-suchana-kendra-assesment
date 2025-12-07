@@ -1,8 +1,8 @@
-const Role = require('../models/Role');
+const RoleModel = require('../models/RoleModel');
 
 const getAllRoles = async (req, res) => {
   try {
-    const roles = await Role.findAll();
+    const roles = await RoleModel.findAll();
     res.json(roles);
   } catch (error) {
     console.error('Get roles error:', error);
@@ -13,7 +13,7 @@ const getAllRoles = async (req, res) => {
 const getRoleById = async (req, res) => {
   try {
     const { id } = req.params;
-    const role = await Role.findById(id);
+    const role = await RoleModel.findById(id);
     
     if (!role) {
       return res.status(404).json({ error: 'Role not found' });
@@ -34,12 +34,12 @@ const createRole = async (req, res) => {
       return res.status(400).json({ error: 'Role name is required' });
     }
 
-    const existingRole = await Role.findByName(name);
+    const existingRole = await RoleModel.findByName(name);
     if (existingRole) {
       return res.status(400).json({ error: 'Role already exists' });
     }
 
-    const role = await Role.create({ name, description });
+    const role = await RoleModel.create({ name, description });
     res.status(201).json(role);
   } catch (error) {
     console.error('Create role error:', error);
@@ -52,20 +52,20 @@ const updateRole = async (req, res) => {
     const { id } = req.params;
     const { name, description } = req.body;
 
-    const role = await Role.findById(id);
+    const role = await RoleModel.findById(id);
     if (!role) {
       return res.status(404).json({ error: 'Role not found' });
     }
 
     // Check if name is being changed and if it's already taken
     if (name && name !== role.name) {
-      const existingRole = await Role.findByName(name);
+      const existingRole = await RoleModel.findByName(name);
       if (existingRole) {
         return res.status(400).json({ error: 'Role name already exists' });
       }
     }
 
-    const updatedRole = await Role.update(id, { name, description });
+    const updatedRole = await RoleModel.update(id, { name, description });
     res.json(updatedRole);
   } catch (error) {
     console.error('Update role error:', error);
@@ -82,12 +82,12 @@ const deleteRole = async (req, res) => {
       return res.status(400).json({ error: 'Cannot delete default roles' });
     }
 
-    const role = await Role.findById(id);
+    const role = await RoleModel.findById(id);
     if (!role) {
       return res.status(404).json({ error: 'Role not found' });
     }
 
-    await Role.delete(id);
+    await RoleModel.delete(id);
     res.json({ message: 'Role deleted successfully' });
   } catch (error) {
     console.error('Delete role error:', error);

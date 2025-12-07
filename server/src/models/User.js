@@ -1,94 +1,42 @@
-const pool = require('../config/database');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/sequelize');
 
-class User {
-  static async findAll() {
-    const [rows] = await pool.query(
-      `SELECT u.id, u.username, u.email, u.created_at, u.updated_at, r.name as role_name, r.id as role_id
-       FROM users u
-       JOIN roles r ON u.role_id = r.id
-       ORDER BY u.created_at DESC`
-    );
-    return rows;
-  }
-
-  static async findById(id) {
-    const [rows] = await pool.query(
-      `SELECT u.id, u.username, u.email, u.created_at, u.updated_at, r.name as role_name, r.id as role_id
-       FROM users u
-       JOIN roles r ON u.role_id = r.id
-       WHERE u.id = ?`,
-      [id]
-    );
-    return rows[0];
-  }
-
-  static async findByUsername(username) {
-    const [rows] = await pool.query(
-      `SELECT u.*, r.name as role_name
-       FROM users u
-       JOIN roles r ON u.role_id = r.id
-       WHERE u.username = ?`,
-      [username]
-    );
-    return rows[0];
-  }
-
-  static async findByEmail(email) {
-    const [rows] = await pool.query(
-      'SELECT * FROM users WHERE email = ?',
-      [email]
-    );
-    return rows[0];
-  }
-
-  static async create(userData) {
-    const { username, email, password, role_id } = userData;
-    const [result] = await pool.query(
-      'INSERT INTO users (username, email, password, role_id) VALUES (?, ?, ?, ?)',
-      [username, email, password, role_id]
-    );
-    return this.findById(result.insertId);
-  }
-
-  static async update(id, userData) {
-    const { username, email, role_id, password } = userData;
-    const updates = [];
-    const values = [];
-
-    if (username) {
-      updates.push('username = ?');
-      values.push(username);
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true
+  },
+  username: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    unique: true
+  },
+  email: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true,
+    validate: {
+      isEmail: true
     }
-    if (email) {
-      updates.push('email = ?');
-      values.push(email);
+  },
+  password: {
+    type: DataTypes.STRING(255),
+    allowNull: false
+  },
+  role_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: {
+      model: 'roles',
+      key: 'id'
     }
-    if (role_id) {
-      updates.push('role_id = ?');
-      values.push(role_id);
-    }
-    if (password) {
-      updates.push('password = ?');
-      values.push(password);
-    }
-
-    if (updates.length === 0) {
-      return this.findById(id);
-    }
-
-    values.push(id);
-    await pool.query(
-      `UPDATE users SET ${updates.join(', ')} WHERE id = ?`,
-      values
-    );
-    return this.findById(id);
   }
-
-  static async delete(id) {
-    await pool.query('DELETE FROM users WHERE id = ?', [id]);
-    return true;
-  }
-}
+}, {
+  tableName: 'users',
+  timestamps: true,
+  createdAt: 'created_at',
+  updatedAt: 'updated_at'
+});
 
 module.exports = User;
-

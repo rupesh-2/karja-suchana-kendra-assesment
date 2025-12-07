@@ -8,10 +8,12 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME || 'fullstack_app',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 0
 });
 
-// Test database connection
+// Test database connection (non-blocking)
 pool.getConnection()
   .then(connection => {
     console.log('✅ Database connected successfully');
@@ -19,6 +21,10 @@ pool.getConnection()
   })
   .catch(err => {
     console.error('❌ Database connection error:', err.message);
+    console.error('💡 Make sure:');
+    console.error('   1. MySQL is running');
+    console.error('   2. Database "' + (process.env.DB_NAME || 'fullstack_app') + '" exists');
+    console.error('   3. .env file has correct credentials');
   });
 
 module.exports = pool;

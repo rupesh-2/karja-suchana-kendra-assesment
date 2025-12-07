@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const UserModel = require('../models/UserModel');
 
 const login = async (req, res) => {
   try {
@@ -10,7 +10,7 @@ const login = async (req, res) => {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const user = await User.findByUsername(username);
+    const user = await UserModel.findByUsername(username);
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
@@ -32,7 +32,7 @@ const login = async (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role_name,
+        role: user.role ? user.role.name : null,
         roleId: user.role_id
       }
     });
@@ -44,7 +44,7 @@ const login = async (req, res) => {
 
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id);
+      const user = await UserModel.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -53,7 +53,7 @@ const getMe = async (req, res) => {
       id: user.id,
       username: user.username,
       email: user.email,
-      role: user.role_name,
+      role: user.role ? user.role.name : null,
       roleId: user.role_id
     });
   } catch (error) {

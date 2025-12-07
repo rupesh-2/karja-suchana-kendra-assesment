@@ -1,118 +1,121 @@
-const pool = require('./database');
+const { sequelize, User, Role, Permission, RolePermission } = require('../models');
 const bcrypt = require('bcryptjs');
 
 async function initDatabase() {
   try {
-    // Create tables
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS roles (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(50) UNIQUE NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-      )
-    `);
+    // Sync all models (create tables if they don't exist)
+    await sequelize.sync({ alter: false });
+    console.log('✅ Database tables synchronized');
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS permissions (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) UNIQUE NOT NULL,
-        description TEXT,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // Create default roles
+    const [readonlyRole, readonlyCreated] = await Role.findOrCreate({
+      where: { id: 1 },
+      defaults: {
+        id: 1,
+        name: 'readonly',
+        description: 'Read-Only Role: Users can only view application content'
+      }
+    });
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS role_permissions (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        role_id INT NOT NULL,
-        permission_id INT NOT NULL,
-        FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
-        FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE,
-        UNIQUE KEY unique_role_permission (role_id, permission_id)
-      )
-    `);
+    const [adminRole, adminCreated] = await Role.findOrCreate({
+      where: { id: 2 },
+      defaults: {
+        id: 2,
+        name: 'admin',
+        description: 'Admin Role: Users have administrative privileges'
+      }
+    });
 
-    await pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(50) UNIQUE NOT NULL,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (role_id) REFERENCES roles(id)
-      )
-    `);
+    const [superadminRole, superadminCreated] = await Role.findOrCreate({
+      where: { id: 3 },
+      defaults: {
+        id: 3,
+        name: 'superadmin',
+        description: 'Super Administrator Role: Users have full access and control'
+      }
+    });
 
-    // Insert default roles
-    await pool.query(`
-      INSERT IGNORE INTO roles (id, name, description) VALUES
-      (1, 'readonly', 'Read-Only Role: Users can only view application content'),
-      (2, 'admin', 'Admin Role: Users have administrative privileges'),
-      (3, 'superadmin', 'Super Administrator Role: Users have full access and control')
-    `);
+    // Create default permissions
+    const permissionsData = [
+      { id: 1, name: 'view_users', description: 'View users list' },
+      { id: 2, name: 'create_users', description: 'Create new users' },
+      { id: 3, name: 'edit_users', description: 'Edit existing users' },
+      { id: 4, name: 'delete_users', description: 'Delete users' },
+      { id: 5, name: 'view_roles', description: 'View roles list' },
+      { id: 6, name: 'create_roles', description: 'Create new roles' },
+      { id: 7, name: 'edit_roles', description: 'Edit existing roles' },
+      { id: 8, name: 'delete_roles', description: 'Delete roles' },
+      { id: 9, name: 'view_dashboard', description: 'View dashboard' },
+      { id: 10, name: 'view_pages', description: 'View all pages' }
+    ];
 
-    // Insert default permissions
-    await pool.query(`
-      INSERT IGNORE INTO permissions (id, name, description) VALUES
-      (1, 'view_users', 'View users list'),
-      (2, 'create_users', 'Create new users'),
-      (3, 'edit_users', 'Edit existing users'),
-      (4, 'delete_users', 'Delete users'),
-      (5, 'view_roles', 'View roles list'),
-      (6, 'create_roles', 'Create new roles'),
-      (7, 'edit_roles', 'Edit existing roles'),
-      (8, 'delete_roles', 'Delete roles'),
-      (9, 'view_dashboard', 'View dashboard'),
-      (10, 'view_pages', 'View all pages')
-    `);
+    for (const permData of permissionsData) {
+      await Permission.findOrCreate({
+        where: { id: permData.id },
+        defaults: permData
+      });
+    }
+
+    // Get all permissions
+    const allPermissions = await Permission.findAll();
 
     // Assign permissions to roles
     // Read-Only: Only view permissions
-    await pool.query(`
-      INSERT IGNORE INTO role_permissions (role_id, permission_id) VALUES
-      (1, 1), (1, 5), (1, 9), (1, 10)
-    `);
+    const readonlyPermissions = allPermissions.filter(p => [1, 5, 9, 10].includes(p.id));
+    await readonlyRole.setPermissions(readonlyPermissions);
 
     // Admin: View, create, edit users; view roles
-    await pool.query(`
-      INSERT IGNORE INTO role_permissions (role_id, permission_id) VALUES
-      (2, 1), (2, 2), (2, 3), (2, 5), (2, 9), (2, 10)
-    `);
+    const adminPermissions = allPermissions.filter(p => [1, 2, 3, 5, 9, 10].includes(p.id));
+    await adminRole.setPermissions(adminPermissions);
 
     // Super Admin: All permissions
-    await pool.query(`
-      INSERT IGNORE INTO role_permissions (role_id, permission_id) VALUES
-      (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8), (3, 9), (3, 10)
-    `);
+    await superadminRole.setPermissions(allPermissions);
 
     // Create default users if they don't exist
-    const [users] = await pool.query('SELECT COUNT(*) as count FROM users');
+    const userCount = await User.count();
     
-    if (users[0].count === 0) {
+    if (userCount === 0) {
       const hashedSuperAdmin = await bcrypt.hash('SuperAdmin123!', 10);
       const hashedAdmin = await bcrypt.hash('Admin123!', 10);
       const hashedReadOnly = await bcrypt.hash('ReadOnly123!', 10);
 
-      await pool.query(`
-        INSERT INTO users (username, email, password, role_id) VALUES
-        ('superadmin', 'superadmin@example.com', ?, 3),
-        ('admin', 'admin@example.com', ?, 2),
-        ('readonly', 'readonly@example.com', ?, 1)
-      `, [hashedSuperAdmin, hashedAdmin, hashedReadOnly]);
+      await User.bulkCreate([
+        {
+          username: 'superadmin',
+          email: 'superadmin@example.com',
+          password: hashedSuperAdmin,
+          role_id: 3
+        },
+        {
+          username: 'admin',
+          email: 'admin@example.com',
+          password: hashedAdmin,
+          role_id: 2
+        },
+        {
+          username: 'readonly',
+          email: 'readonly@example.com',
+          password: hashedReadOnly,
+          role_id: 1
+        }
+      ]);
 
       console.log('✅ Default users created');
     }
 
     console.log('✅ Database initialized successfully');
   } catch (error) {
-    console.error('❌ Database initialization error:', error);
+    console.error('❌ Database initialization error:', error.message);
+    if (error.name === 'SequelizeAccessDeniedError') {
+      console.error('💡 Database access denied. Check your username and password in .env');
+    } else if (error.name === 'SequelizeDatabaseError' && error.message.includes('Unknown database')) {
+      console.error('💡 Database does not exist. Please create it first:');
+      console.error(`   CREATE DATABASE ${process.env.DB_NAME || 'fullstack_app'};`);
+    } else if (error.name === 'SequelizeConnectionError') {
+      console.error('💡 Cannot connect to MySQL. Make sure MySQL is running.');
+    }
     throw error;
   }
 }
 
 module.exports = initDatabase;
-

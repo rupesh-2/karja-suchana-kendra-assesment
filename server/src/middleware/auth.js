@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const pool = require('../config/database');
+const UserModel = require('../models/UserModel');
 
 const authenticate = async (req, res, next) => {
   try {
@@ -12,16 +12,20 @@ const authenticate = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
     // Get user from database
-    const [users] = await pool.query(
-      'SELECT u.*, r.name as role_name FROM users u JOIN roles r ON u.role_id = r.id WHERE u.id = ?',
-      [decoded.userId]
-    );
+    const user = await UserModel.findById(decoded.userId);
 
-    if (users.length === 0) {
+    if (!user) {
       return res.status(401).json({ error: 'User not found' });
     }
 
-    req.user = users[0];
+    // Format user for compatibility
+    req.user = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role_id: user.role_id,
+      role_name: user.role ? user.role.name : null
+    };
     next();
   } catch (error) {
     if (error.name === 'JsonWebTokenError') {
@@ -55,14 +59,12 @@ const checkPermission = async (permissionName) => {
         return res.status(401).json({ error: 'Authentication required' });
       }
 
-      const [permissions] = await pool.query(
-        `SELECT p.name FROM permissions p
-         JOIN role_permissions rp ON p.id = rp.permission_id
-         WHERE rp.role_id = ? AND p.name = ?`,
-        [req.user.role_id, permissionName]
-      );
-
-      if (permissions.length === 0) {
+      const RoleModel = require('../models/RoleModel');
+      const permissions = await RoleModel.getPermissions(req.user.role_id);
+      
+      const hasPermission = permissions.some(p => p.name === permissionName);
+      
+      if (!hasPermission) {
         return res.status(403).json({ error: 'Insufficient permissions' });
       }
 

@@ -3,6 +3,8 @@ const cors = require('cors');
 require('dotenv').config();
 
 const initDatabase = require('./config/initDatabase');
+// Initialize models to set up associations
+require('./models');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
@@ -18,13 +20,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Initialize database
+// Initialize database (non-blocking - server will start even if DB init fails)
 initDatabase()
   .then(() => {
     console.log('✅ Database ready');
   })
   .catch(err => {
-    console.error('❌ Database initialization failed:', err);
+    console.error('❌ Database initialization failed:', err.message);
+    console.error('💡 The server will start, but database operations may fail.');
+    console.error('💡 Please check your database configuration in .env file');
   });
 
 // Routes
