@@ -29,10 +29,10 @@
   --navbar-active: #007bff;
   --navbar-text-active: #ffffff;
   /* Button colors for light theme */
-  --btn-secondary-bg: rgba(255, 255, 255, 0.2);
+  --btn-secondary-bg: #6c757d;
   --btn-secondary-text: #ffffff;
-  --btn-secondary-border: rgba(255, 255, 255, 0.3);
-  --btn-secondary-hover: rgba(255, 255, 255, 0.3);
+  --btn-secondary-border: #6c757d;
+  --btn-secondary-hover: #5a6268;
   /* Alert colors for light theme */
   --alert-error-bg: #f8d7da;
   --alert-error-text: #721c24;
@@ -172,13 +172,32 @@ code {
 
 .btn-secondary {
   background-color: var(--btn-secondary-bg);
-  color: var(--btn-secondary-text);
+  color: var(--btn-secondary-text) !important;
   border: 1px solid var(--btn-secondary-border);
 }
 
 .btn-secondary:hover {
   background-color: var(--btn-secondary-hover);
-  opacity: 0.9;
+  color: var(--btn-secondary-text) !important;
+  opacity: 0.95;
+}
+
+/* Ensure all buttons have proper contrast in light mode */
+[data-theme='light'] .btn-primary,
+[data-theme='light'] .btn-danger,
+[data-theme='light'] .btn-success {
+  color: #ffffff !important;
+}
+
+[data-theme='light'] .btn-secondary {
+  background-color: #6c757d !important;
+  color: #ffffff !important;
+  border-color: #6c757d !important;
+}
+
+[data-theme='light'] .btn-secondary:hover {
+  background-color: #5a6268 !important;
+  color: #ffffff !important;
 }
 
 .btn-success {
