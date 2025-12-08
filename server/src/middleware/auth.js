@@ -18,6 +18,11 @@ const authenticate = async (req, res, next) => {
       return res.status(401).json({ error: 'User not found' });
     }
 
+    // Check if user is soft deleted
+    if (user.deleted_at) {
+      return res.status(401).json({ error: 'Account has been deactivated' });
+    }
+
     // Format user for compatibility
     req.user = {
       id: user.id,

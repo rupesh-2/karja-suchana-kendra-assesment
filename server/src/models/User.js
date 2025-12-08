@@ -31,12 +31,18 @@ const User = sequelize.define('User', {
       model: 'roles',
       key: 'id'
     }
+  },
+  deleted_at: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null
   }
 }, {
   tableName: 'users',
   timestamps: true,
   createdAt: 'created_at',
-  updatedAt: 'updated_at'
+  updatedAt: 'updated_at',
+  paranoid: false // We'll handle soft delete manually
 });
 
 module.exports = User;

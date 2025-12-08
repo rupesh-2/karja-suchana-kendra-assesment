@@ -1,14 +1,14 @@
 const { UserLog, User } = require('../models');
 
 class LogService {
-  static async createLog(userId, action, performedBy, req = null) {
+  static async createLog(userId, action, performedBy = null, ipAddress = null, details = null) {
     try {
       const logData = {
         user_id: userId,
         action,
         performed_by: performedBy,
-        ip_address: req?.ip || req?.connection?.remoteAddress || null,
-        user_agent: req?.headers?.['user-agent'] || null
+        ip_address: ipAddress,
+        details: details
       };
 
       return await UserLog.create(logData);
@@ -33,7 +33,7 @@ class LogService {
           attributes: ['id', 'username', 'email']
         }
       ],
-      order: [['timestamp', 'DESC']],
+      order: [['created_at', 'DESC']],
       limit,
       offset
     });
@@ -49,7 +49,7 @@ class LogService {
           attributes: ['id', 'username', 'email']
         }
       ],
-      order: [['timestamp', 'DESC']],
+      order: [['created_at', 'DESC']],
       limit
     });
   }

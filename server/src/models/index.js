@@ -7,6 +7,7 @@ const UserLog = require('./UserLog');
 const Notification = require('./Notification');
 const File = require('./File');
 const PasswordReset = require('./PasswordReset');
+const RefreshToken = require('./RefreshToken');
 
 // Define associations
 User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
@@ -44,6 +45,10 @@ User.hasMany(File, { foreignKey: 'user_id', as: 'files' });
 PasswordReset.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 User.hasMany(PasswordReset, { foreignKey: 'user_id', as: 'passwordResets' });
 
+// RefreshToken associations
+RefreshToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(RefreshToken, { foreignKey: 'user_id', as: 'refreshTokens' });
+
 module.exports = {
   sequelize,
   User,
@@ -53,6 +58,7 @@ module.exports = {
   UserLog,
   Notification,
   File,
-  PasswordReset
+  PasswordReset,
+  RefreshToken
 };
 

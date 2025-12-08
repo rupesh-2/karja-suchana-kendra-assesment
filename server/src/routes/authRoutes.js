@@ -5,6 +5,7 @@ const { authenticate } = require('../middleware/auth');
 const passwordResetRoutes = require('../modules/auth/passwordResetRoutes');
 
 router.post('/login', authController.login);
+router.post('/refresh', authController.refreshToken);
 router.get('/me', authenticate, authController.getMe);
 router.post('/logout', authenticate, authController.logout);
 
