@@ -3,18 +3,82 @@ const UserModel = require('../models/UserModel');
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await UserModel.findAll();
-    // Format response for compatibility
+    const { Op } = require('sequelize');
+    const { User, Role } = require('../models');
+    
+    // Extract query parameters
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+    const search = req.query.search || '';
+    const roleFilter = req.query.role || '';
+    const statusFilter = req.query.status || 'all'; // all, active, deleted
+    const sortBy = req.query.sortBy || 'created_at';
+    const sortOrder = req.query.sortOrder || 'DESC';
+
+    // Build where clause
+    const where = {};
+    
+    // Search filter (username or email)
+    if (search) {
+      where[Op.or] = [
+        { username: { [Op.like]: `%${search}%` } },
+        { email: { [Op.like]: `%${search}%` } }
+      ];
+    }
+
+    // Role filter
+    if (roleFilter) {
+      where.role_id = roleFilter;
+    }
+
+    // Status filter (soft delete)
+    if (statusFilter === 'active') {
+      where.deleted_at = null;
+    } else if (statusFilter === 'deleted') {
+      where.deleted_at = { [Op.ne]: null };
+    }
+
+    // Get total count for pagination
+    const total = await User.count({ where });
+
+    // Fetch users with pagination
+    const users = await User.findAll({
+      where,
+      include: [
+        {
+          model: Role,
+          as: 'role',
+          attributes: ['id', 'name', 'description']
+        }
+      ],
+      order: [[sortBy, sortOrder]],
+      limit,
+      offset,
+      attributes: { exclude: ['password'] }
+    });
+
+    // Format response
     const formattedUsers = users.map(user => ({
       id: user.id,
       username: user.username,
       email: user.email,
       role_name: user.role ? user.role.name : null,
       role_id: user.role_id,
+      deleted_at: user.deleted_at,
       created_at: user.created_at,
       updated_at: user.updated_at
     }));
-    res.json(formattedUsers);
+
+    res.json({
+      users: formattedUsers,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     console.error('Get users error:', error);
     res.status(500).json({ error: 'Failed to fetch users' });

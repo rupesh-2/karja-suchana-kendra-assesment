@@ -1,14 +1,20 @@
 const { User, Role } = require('./index');
 
 class UserModel {
-  static async findAll() {
+  static async findAll(includeDeleted = false) {
+    const where = {};
+    if (!includeDeleted) {
+      where.deleted_at = null;
+    }
+    
     return await User.findAll({
+      where,
       include: [{
         model: Role,
         as: 'role',
         attributes: ['id', 'name', 'description']
       }],
-      attributes: ['id', 'username', 'email', 'created_at', 'updated_at', 'role_id'],
+      attributes: ['id', 'username', 'email', 'created_at', 'updated_at', 'role_id', 'deleted_at'],
       order: [['created_at', 'DESC']]
     });
   }
@@ -51,9 +57,19 @@ class UserModel {
     return await this.findById(id);
   }
 
-  static async delete(id) {
-    await User.destroy({ where: { id } });
+  static async delete(id, hardDelete = false) {
+    if (hardDelete) {
+      await User.destroy({ where: { id }, force: true });
+    } else {
+      // Soft delete
+      await User.update({ deleted_at: new Date() }, { where: { id } });
+    }
     return true;
+  }
+
+  static async restore(id) {
+    await User.update({ deleted_at: null }, { where: { id } });
+    return await this.findById(id);
   }
 }
 
