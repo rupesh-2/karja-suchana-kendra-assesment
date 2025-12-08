@@ -43,12 +43,15 @@ describe('Authentication API Integration Tests', () => {
       if (testUser) {
         await User.destroy({ where: { id: testUser.id }, force: true });
       }
-      // Close database connection
-      await sequelize.close();
+      // Close database connection properly
+      if (sequelize) {
+        await sequelize.close();
+      }
     } catch (error) {
       // Ignore cleanup errors in tests
+      console.error('Cleanup error (ignored):', error.message);
     }
-  });
+  }, 10000); // 10 second timeout for cleanup
 
   describe('POST /api/auth/login', () => {
     it('should login successfully with valid credentials', async () => {

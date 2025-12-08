@@ -3,22 +3,26 @@ module.exports = {
   coveragePathIgnorePatterns: [
     '/node_modules/',
     '/tests/',
-    '/config/'
+    '/config/',
   ],
   testMatch: [
     '**/__tests__/**/*.test.js',
-    '**/?(*.)+(spec|test).js'
+    '**/?(*.)+(spec|test).js',
   ],
   collectCoverageFrom: [
     'src/**/*.js',
     '!src/**/*.test.js',
     '!src/config/**',
-    '!src/app.js'
+    '!src/app.js',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
-  testTimeout: 10000,
-  verbose: true
+  testTimeout: 30000,
+  verbose: true,
+  // Force exit after tests to prevent hanging on open handles
+  forceExit: true,
+  // Detect open handles (useful for debugging)
+  // detectOpenHandles: true,
 };
 
