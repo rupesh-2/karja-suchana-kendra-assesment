@@ -3,6 +3,9 @@ const Role = require('./Role');
 const Permission = require('./Permission');
 const RolePermission = require('./RolePermission');
 const User = require('./User');
+const UserLog = require('./UserLog');
+const Notification = require('./Notification');
+const File = require('./File');
 
 // Define associations
 User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
@@ -22,11 +25,28 @@ Permission.belongsToMany(Role, {
   as: 'roles'
 });
 
+// UserLog associations
+UserLog.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+UserLog.belongsTo(User, { foreignKey: 'performed_by', as: 'performer' });
+User.hasMany(UserLog, { foreignKey: 'user_id', as: 'logs' });
+
+// Notification associations
+Notification.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+Notification.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
+User.hasMany(Notification, { foreignKey: 'user_id', as: 'notifications' });
+
+// File associations
+File.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
+User.hasMany(File, { foreignKey: 'user_id', as: 'files' });
+
 module.exports = {
   sequelize,
   User,
   Role,
   Permission,
-  RolePermission
+  RolePermission,
+  UserLog,
+  Notification,
+  File
 };
 

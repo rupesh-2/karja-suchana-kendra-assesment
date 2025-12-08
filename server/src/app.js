@@ -2,9 +2,17 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+// Initialize models to set up associations (must be before routes)
+// Wrap in try-catch to prevent crashes if models fail to load
+try {
+  require('./models');
+} catch (err) {
+  console.error('⚠️  Error loading models:', err.message);
+  console.error('💡 Server will start, but database operations may fail.');
+  console.error('💡 Full error:', err);
+}
+
 const initDatabase = require('./config/initDatabase');
-// Initialize models to set up associations
-require('./models');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
@@ -21,15 +29,19 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Initialize database (non-blocking - server will start even if DB init fails)
-initDatabase()
-  .then(() => {
-    console.log('✅ Database ready');
-  })
-  .catch(err => {
-    console.error('❌ Database initialization failed:', err.message);
-    console.error('💡 The server will start, but database operations may fail.');
-    console.error('💡 Please check your database configuration in .env file');
-  });
+// Delay initialization slightly to ensure server is ready
+setTimeout(() => {
+  initDatabase()
+    .then(() => {
+      console.log('✅ Database ready');
+    })
+    .catch(err => {
+      console.error('❌ Database initialization failed:', err.message);
+      console.error('💡 The server will start, but database operations may fail.');
+      console.error('💡 Please check your database configuration in .env file');
+      console.error('💡 Full error:', err);
+    });
+}, 100);
 
 // Routes
 app.get('/', (req, res) => {
@@ -53,8 +65,37 @@ app.use((req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-app.listen(PORT, () => {
+// Start server
+const server = app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📡 API available at http://localhost:${PORT}/api`);
+});
+
+// Handle server errors
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`❌ Port ${PORT} is already in use. Please use a different port.`);
+  } else {
+    console.error('❌ Server error:', err);
+  }
+  process.exit(1);
+});
+
+// Handle uncaught exceptions (set up early to catch all errors)
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception:', err.message);
+  console.error('Stack:', err.stack);
+  // Don't exit - let the server try to continue
+  // process.exit(1);
+});
+
+// Handle unhandled promise rejections (set up early)
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ Unhandled Rejection:', reason);
+  if (reason && reason.stack) {
+    console.error('Stack:', reason.stack);
+  }
+  // Don't exit - let the server try to continue
 });
 
 module.exports = app;

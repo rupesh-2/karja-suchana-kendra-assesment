@@ -52,7 +52,7 @@ const authorize = (...allowedRoles) => {
   };
 };
 
-const checkPermission = async (permissionName) => {
+const checkPermission = (permissionName) => {
   return async (req, res, next) => {
     try {
       if (!req.user) {

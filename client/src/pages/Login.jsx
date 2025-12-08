@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import ThemeToggle from '../components/ThemeToggle'
 import './Login.css'
 
 const Login = () => {
@@ -28,6 +29,9 @@ const Login = () => {
 
   return (
     <div className="login-container">
+      <div style={{ position: 'absolute', top: '20px', right: '20px' }}>
+        <ThemeToggle />
+      </div>
       <div className="login-card">
         <h1>Login</h1>
         <p className="login-subtitle">Sign in to your account</p>

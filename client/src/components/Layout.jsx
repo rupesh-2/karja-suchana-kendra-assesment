@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import ThemeToggle from './ThemeToggle'
 import './Layout.css'
 
 const Layout = () => {
@@ -58,6 +59,7 @@ const Layout = () => {
             </Link>
           </div>
           <div className="nav-user">
+            <ThemeToggle />
             <span className="user-info">
               {user?.username} ({user?.role})
             </span>

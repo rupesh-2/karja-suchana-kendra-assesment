@@ -5,10 +5,16 @@
 }
 
 .navbar {
-  background-color: #2c3e50;
-  color: white;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
   padding: 0;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px var(--shadow);
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="dark"] .navbar {
+  background-color: #1e1e1e;
 }
 
 .nav-container {
@@ -34,19 +40,28 @@
 }
 
 .nav-link {
-  color: white;
+  color: var(--text-primary);
   text-decoration: none;
   padding: 10px 15px;
   border-radius: 4px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+[data-theme="light"] .nav-link {
+  color: white;
 }
 
 .nav-link:hover {
+  background-color: var(--bg-hover);
+}
+
+[data-theme="light"] .nav-link:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
 .nav-link.active {
-  background-color: #3498db;
+  background-color: var(--accent-primary);
+  color: white;
 }
 
 .nav-user {
@@ -57,13 +72,19 @@
 
 .user-info {
   font-size: 14px;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+[data-theme="light"] .user-info {
   color: #ecf0f1;
 }
 
 .main-content {
   flex: 1;
   padding: 30px 20px;
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
+  transition: background-color 0.3s ease;
 }
 
 @media (max-width: 768px) {
