@@ -61,7 +61,7 @@ const Layout = () => {
           <div className="nav-user">
             <ThemeToggle />
             <span className="user-info">
-              {user?.username} ({user?.role})
+              {user ? `${user.username} (${user.role})` : 'Loading...'}
             </span>
             <button onClick={logout} className="btn btn-secondary">
               Logout

@@ -44,6 +44,11 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
+    // Don't intercept refresh token endpoint or login endpoint
+    if (originalRequest.url?.includes('/auth/refresh') || originalRequest.url?.includes('/auth/login')) {
+      return Promise.reject(error)
+    }
+
     // If error is 401 and we haven't tried to refresh yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
@@ -66,10 +71,10 @@ api.interceptors.response.use(
       const refreshToken = authService.getRefreshToken()
 
       if (!refreshToken) {
-        // No refresh token, logout user
+        // No refresh token, but don't redirect immediately - let the component handle it
         authService.clearTokens()
         processQueue(new Error('No refresh token'), null)
-        window.location.href = '/login'
+        isRefreshing = false
         return Promise.reject(error)
       }
 
@@ -77,19 +82,22 @@ api.interceptors.response.use(
         const response = await authService.refreshToken(refreshToken)
         const { accessToken } = response
 
-        authService.setAccessToken(accessToken)
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`
-
-        processQueue(null, accessToken)
-        return api(originalRequest)
+        if (accessToken) {
+          authService.setAccessToken(accessToken)
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`
+          processQueue(null, accessToken)
+          isRefreshing = false
+          return api(originalRequest)
+        } else {
+          throw new Error('No access token in refresh response')
+        }
       } catch (refreshError) {
-        // Refresh failed, logout user
+        // Refresh failed - clear tokens but don't redirect here
+        // Let the component handle the redirect
         authService.clearTokens()
         processQueue(refreshError, null)
-        window.location.href = '/login'
-        return Promise.reject(refreshError)
-      } finally {
         isRefreshing = false
+        return Promise.reject(refreshError)
       }
     }
 
