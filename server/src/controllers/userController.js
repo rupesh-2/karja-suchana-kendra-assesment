@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
 const UserModel = require('../models/UserModel');
+const EmailService = require('../services/emailService');
+const LogService = require('../services/logService');
 
 const getAllUsers = async (req, res) => {
   try {
@@ -138,6 +140,19 @@ const createUser = async (req, res) => {
       role_id
     });
 
+    // Send welcome email
+    await EmailService.sendNewUserEmail(user.email, user.username);
+
+    // Log user creation
+    await LogService.createLog(
+      user.id,
+      'user_created',
+      req.user.id,
+      req.ip,
+      req.get('user-agent'),
+      `User ${username} created by ${req.user.username}`
+    );
+
     res.status(201).json({
       id: user.id,
       username: user.username,
@@ -177,6 +192,8 @@ const updateUser = async (req, res) => {
       }
     }
 
+    const oldRole = user.role ? user.role.name : null;
+    
     const updateData = {};
     if (username) updateData.username = username;
     if (email) updateData.email = email;
@@ -186,6 +203,27 @@ const updateUser = async (req, res) => {
     }
 
     const updatedUser = await UserModel.update(id, updateData);
+    
+    // Send email notification if role changed
+    if (role_id && role_id !== user.role_id && updatedUser.role) {
+      const newRole = updatedUser.role.name;
+      await EmailService.sendRoleChangeEmail(
+        updatedUser.email,
+        updatedUser.username,
+        oldRole || 'Unknown',
+        newRole
+      );
+    }
+    
+    // Log user update
+    await LogService.createLog(
+      id,
+      'user_updated',
+      req.user.id,
+      req.ip,
+      req.get('user-agent'),
+      `User ${updatedUser.username} updated by ${req.user.username}`
+    );
     res.json({
       id: updatedUser.id,
       username: updatedUser.username,

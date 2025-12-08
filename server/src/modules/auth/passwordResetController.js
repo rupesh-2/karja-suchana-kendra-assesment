@@ -3,6 +3,7 @@ const UserModel = require('../../models/UserModel');
 const { PasswordReset, User } = require('../../models');
 const bcrypt = require('bcryptjs');
 const LogService = require('../../services/logService');
+const EmailService = require('../../services/emailService');
 
 const forgotPassword = async (req, res) => {
   try {
@@ -37,16 +38,16 @@ const forgotPassword = async (req, res) => {
     });
 
     // Log the action
-    await LogService.createLog(user.id, 'password_reset_requested', user.id, req);
+    await LogService.createLog(user.id, 'password_reset_requested', user.id, req.ip, req.get('user-agent'));
 
-    // TODO: Send email with reset link
-    // For now, return token in development (remove in production!)
+    // Send email with reset link
+    const resetUrl = `${process.env.CLIENT_URL || 'http://localhost:3000'}/reset-password?token=${token}`;
+    await EmailService.sendPasswordResetEmail(user.email, token, resetUrl);
+
+    // In development, also log to console
     if (process.env.NODE_ENV === 'development') {
       console.log(`Password reset token for ${email}: ${token}`);
-      return res.json({ 
-        message: 'Password reset token generated (check console in development)',
-        token: token // Remove this in production!
-      });
+      console.log(`Reset URL: ${resetUrl}`);
     }
 
     res.json({ 
@@ -98,7 +99,7 @@ const resetPassword = async (req, res) => {
     await resetToken.update({ used: true });
 
     // Log the action
-    await LogService.createLog(resetToken.user_id, 'password_reset_completed', resetToken.user_id, req);
+    await LogService.createLog(resetToken.user_id, 'password_reset_completed', resetToken.user_id, req.ip, req.get('user-agent'));
 
     res.json({ message: 'Password has been reset successfully' });
   } catch (error) {

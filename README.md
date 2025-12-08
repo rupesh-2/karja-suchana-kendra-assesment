@@ -57,6 +57,7 @@ npm run install:all
 ```
 
 Or install individually:
+
 ```bash
 npm install
 cd server && npm install
@@ -66,17 +67,20 @@ cd ../client && npm install
 ### 2. Database Setup
 
 1. Create a MySQL database:
+
 ```sql
 CREATE DATABASE fullstack_app;
 ```
 
 2. Copy the environment example file:
+
 ```bash
 cd server
 cp .env.example .env
 ```
 
 3. Update `server/.env` with your database credentials:
+
 ```
 DB_HOST=localhost
 DB_USER=root
@@ -99,12 +103,14 @@ npm run dev
 #### Run Separately
 
 **Backend only:**
+
 ```bash
 cd server
 npm run dev
 ```
 
 **Frontend only:**
+
 ```bash
 cd client
 npm run dev
@@ -132,11 +138,13 @@ After running the application for the first time, you can use these default cred
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/login` - User login
 - `POST /api/auth/logout` - User logout
 - `GET /api/auth/me` - Get current user
 
 ### Users
+
 - `GET /api/users` - Get all users (requires authentication)
 - `GET /api/users/:id` - Get user by ID
 - `POST /api/users` - Create new user (Admin/Super Admin only)
@@ -144,6 +152,7 @@ After running the application for the first time, you can use these default cred
 - `DELETE /api/users/:id` - Delete user (Super Admin only)
 
 ### Roles
+
 - `GET /api/roles` - Get all roles
 - `GET /api/roles/:id` - Get role by ID
 - `POST /api/roles` - Create new role (Super Admin only)
@@ -153,17 +162,20 @@ After running the application for the first time, you can use these default cred
 ## Roles and Permissions
 
 ### Read-Only Role
+
 - Can view all pages and content
 - Cannot create, edit, or delete any data
 - Limited to read operations
 
 ### Admin Role
+
 - Can view all pages
 - Can manage users (create, edit, delete)
 - Cannot manage roles or permissions
 - Cannot delete other admins
 
 ### Super Administrator Role
+
 - Full access to all features
 - Can manage users, roles, and permissions
 - Can delete any user including admins
@@ -172,6 +184,7 @@ After running the application for the first time, you can use these default cred
 ## Technologies Used
 
 ### Backend
+
 - Node.js
 - Express.js
 - MySQL2
@@ -181,6 +194,7 @@ After running the application for the first time, you can use these default cred
 - dotenv
 
 ### Frontend
+
 - React.js
 - React Router
 - Axios
@@ -191,6 +205,7 @@ After running the application for the first time, you can use these default cred
 ### Project Structure Details
 
 **Server (`/server`):**
+
 - `src/controllers/` - Request handlers
 - `src/routes/` - API route definitions
 - `src/models/` - Database models and queries
@@ -199,6 +214,7 @@ After running the application for the first time, you can use these default cred
 - `src/utils/` - Utility functions
 
 **Client (`/client`):**
+
 - `src/components/` - Reusable React components
 - `src/pages/` - Page components
 - `src/hooks/` - Custom React hooks
@@ -209,6 +225,7 @@ After running the application for the first time, you can use these default cred
 ## Testing
 
 Run tests (when implemented):
+
 ```bash
 npm test
 ```
@@ -216,6 +233,7 @@ npm test
 ## Deployment
 
 1. Build the React frontend:
+
 ```bash
 npm run build
 ```
@@ -223,15 +241,11 @@ npm run build
 2. Set production environment variables in `server/.env`
 
 3. Start the production server:
+
 ```bash
 npm start
 ```
 
-## License
-
-ISC
-
 ## Support
 
 For issues or questions, please refer to the individual README files in the `client/` and `server/` directories.
-

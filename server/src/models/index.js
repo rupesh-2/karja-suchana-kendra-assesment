@@ -8,6 +8,7 @@ const Notification = require('./Notification');
 const File = require('./File');
 const PasswordReset = require('./PasswordReset');
 const RefreshToken = require('./RefreshToken');
+const SystemSetting = require('./SystemSetting');
 
 // Define associations
 User.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
@@ -59,6 +60,7 @@ module.exports = {
   Notification,
   File,
   PasswordReset,
-  RefreshToken
+  RefreshToken,
+  SystemSetting
 };
 

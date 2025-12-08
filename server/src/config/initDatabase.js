@@ -1,4 +1,4 @@
-const { sequelize, User, Role, Permission, RolePermission } = require('../models');
+const { sequelize, User, Role, Permission, RolePermission, SystemSetting } = require('../models');
 const bcrypt = require('bcryptjs');
 
 async function initDatabase() {
@@ -147,6 +147,49 @@ async function initDatabase() {
 
       console.log('✅ Default users created');
     }
+
+    // Initialize default system settings
+    const defaultSettings = [
+      {
+        key: 'site_title',
+        value: 'Full-Stack Application',
+        type: 'string',
+        description: 'Site title displayed in the application',
+      },
+      {
+        key: 'maintenance_mode',
+        value: 'false',
+        type: 'boolean',
+        description: 'Enable/disable maintenance mode',
+      },
+      {
+        key: 'pagination_limit',
+        value: '10',
+        type: 'number',
+        description: 'Default number of items per page',
+      },
+      {
+        key: 'max_file_size',
+        value: '10485760',
+        type: 'number',
+        description: 'Maximum file upload size in bytes (10MB)',
+      },
+      {
+        key: 'session_timeout',
+        value: '900',
+        type: 'number',
+        description: 'Session timeout in seconds (15 minutes)',
+      },
+    ];
+
+    for (const setting of defaultSettings) {
+      await SystemSetting.findOrCreate({
+        where: { key: setting.key },
+        defaults: setting,
+      });
+    }
+
+    console.log('✅ Default system settings initialized');
 
     console.log('✅ Database initialized successfully');
   } catch (error) {

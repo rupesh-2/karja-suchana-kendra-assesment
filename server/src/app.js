@@ -20,6 +20,7 @@ const profileRoutes = require('./modules/profile/profileRoutes');
 const logRoutes = require('./modules/logs/logRoutes');
 const notificationRoutes = require('./modules/notifications/notificationRoutes');
 const uploadRoutes = require('./modules/uploads/uploadRoutes');
+const settingsRoutes = require('./modules/settings/settingsRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -64,6 +65,7 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/logs', logRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/settings', settingsRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));

@@ -12,11 +12,16 @@ router.get('/', checkPermission('view_users'), userController.getAllUsers);
 // Get user by ID
 router.get('/:id', checkPermission('view_users'), userController.getUserById);
 
+const { validateCreateUser, validateUpdateUser, validatePagination } = require('../middleware/validation');
+
 // Create user - Admin and Super Admin only
-router.post('/', checkPermission('create_users'), userController.createUser);
+router.post('/', checkPermission('create_users'), validateCreateUser, userController.createUser);
 
 // Update user - Admin and Super Admin only
-router.put('/:id', checkPermission('edit_users'), userController.updateUser);
+router.put('/:id', checkPermission('edit_users'), validateUpdateUser, userController.updateUser);
+
+// Get all users with pagination validation
+router.get('/', checkPermission('view_users'), validatePagination, userController.getAllUsers);
 
 // Delete user - Super Admin only
 router.delete('/:id', authorize('superadmin'), userController.deleteUser);

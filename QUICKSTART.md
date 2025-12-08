@@ -128,7 +128,7 @@ npm run dev
 
 2. **Login with default credentials:**
    - **Super Admin:**
-     - Username: `superadmin`
+     - Username: `superadmin@example.com`
      - Password: `SuperAdmin123!`
    
    - **Admin:**
