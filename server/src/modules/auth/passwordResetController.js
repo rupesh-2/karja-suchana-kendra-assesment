@@ -1,6 +1,6 @@
 const crypto = require('crypto');
 const UserModel = require('../../models/UserModel');
-const { PasswordReset } = require('../../models');
+const { PasswordReset, User } = require('../../models');
 const bcrypt = require('bcryptjs');
 const LogService = require('../../services/logService');
 
@@ -75,11 +75,7 @@ const resetPassword = async (req, res) => {
       where: { 
         token,
         used: false
-      },
-      include: [{
-        model: require('../../models').User,
-        as: 'user'
-      }]
+      }
     });
 
     if (!resetToken) {
