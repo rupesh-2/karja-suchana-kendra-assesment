@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const UserModel = require('../models/UserModel');
+const LogService = require('../services/logService');
 
 const login = async (req, res) => {
   try {
@@ -26,6 +27,9 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
     );
+
+    // Log login action
+    await LogService.createLog(user.id, 'user_login', user.id, req);
 
     res.json({
       token,
