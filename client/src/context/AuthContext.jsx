@@ -14,16 +14,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [token, setToken] = useState(localStorage.getItem('token'))
-
-  useEffect(() => {
-    if (token) {
-      authService.setToken(token)
-      fetchUser()
-    } else {
-      setLoading(false)
-    }
-  }, [token])
+  const [accessToken, setAccessToken] = useState(authService.getAccessToken())
 
   const fetchUser = async () => {
     try {
@@ -31,29 +22,68 @@ export const AuthProvider = ({ children }) => {
       setUser(userData)
     } catch (error) {
       console.error('Failed to fetch user:', error)
-      logout()
+      // Don't logout immediately - let the interceptor handle token refresh
+      if (error.response?.status === 401) {
+        // Clear tokens and redirect to login
+        authService.clearTokens()
+        setAccessToken(null)
+        setUser(null)
+        window.location.href = '/login'
+      }
     } finally {
       setLoading(false)
     }
   }
 
+  useEffect(() => {
+    if (accessToken) {
+      authService.setAccessToken(accessToken)
+      fetchUser()
+    } else {
+      // Check for old token format for backward compatibility
+      const oldToken = localStorage.getItem('token')
+      if (oldToken) {
+        authService.setAccessToken(oldToken)
+        setAccessToken(oldToken)
+        fetchUser()
+      } else {
+        setLoading(false)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accessToken])
+
   const login = async (username, password) => {
     try {
       const response = await authService.login(username, password)
-      setToken(response.token)
+      
+      // Handle new token structure (accessToken + refreshToken)
+      if (response.accessToken && response.refreshToken) {
+        authService.setAccessToken(response.accessToken)
+        authService.setRefreshToken(response.refreshToken)
+        setAccessToken(response.accessToken)
+      } else if (response.token) {
+        // Backward compatibility with old token format
+        authService.setAccessToken(response.token)
+        setAccessToken(response.token)
+      }
+      
       setUser(response.user)
-      localStorage.setItem('token', response.token)
       return response
     } catch (error) {
       throw error
     }
   }
 
-  const logout = () => {
-    setToken(null)
+  const logout = async () => {
+    const refreshToken = authService.getRefreshToken()
+    if (refreshToken) {
+      await authService.logout(refreshToken)
+    }
+    
+    setAccessToken(null)
     setUser(null)
-    localStorage.removeItem('token')
-    authService.setToken(null)
+    authService.clearTokens()
   }
 
   const hasPermission = (permission) => {
