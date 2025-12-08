@@ -5,16 +5,12 @@
 }
 
 .navbar {
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
+  background-color: var(--navbar-bg);
+  color: var(--navbar-text);
   padding: 0;
   box-shadow: 0 2px 4px var(--shadow);
   border-bottom: 1px solid var(--border-color);
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-[data-theme="dark"] .navbar {
-  background-color: #1e1e1e;
 }
 
 .nav-container {
@@ -30,6 +26,8 @@
 .nav-brand h2 {
   margin: 0;
   font-size: 20px;
+  color: var(--navbar-text);
+  transition: color 0.3s ease;
 }
 
 .nav-menu {
@@ -40,28 +38,23 @@
 }
 
 .nav-link {
-  color: var(--text-primary);
+  color: var(--navbar-text);
   text-decoration: none;
   padding: 10px 15px;
   border-radius: 4px;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-[data-theme="light"] .nav-link {
-  color: white;
+  font-weight: 500;
 }
 
 .nav-link:hover {
-  background-color: var(--bg-hover);
-}
-
-[data-theme="light"] .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: var(--navbar-hover);
+  color: var(--navbar-text);
 }
 
 .nav-link.active {
-  background-color: var(--accent-primary);
-  color: white;
+  background-color: var(--navbar-active);
+  color: var(--navbar-text-active);
+  font-weight: 600;
 }
 
 .nav-user {
@@ -72,12 +65,9 @@
 
 .user-info {
   font-size: 14px;
-  color: var(--text-secondary);
+  color: var(--navbar-text);
   transition: color 0.3s ease;
-}
-
-[data-theme="light"] .user-info {
-  color: #ecf0f1;
+  font-weight: 500;
 }
 
 .main-content {
