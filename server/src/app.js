@@ -33,19 +33,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Initialize database (non-blocking - server will start even if DB init fails)
-// Delay initialization slightly to ensure server is ready
-setTimeout(() => {
-  initDatabase()
-    .then(() => {
-      console.log('✅ Database ready');
-    })
-    .catch(err => {
-      console.error('❌ Database initialization failed:', err.message);
-      console.error('💡 The server will start, but database operations may fail.');
-      console.error('💡 Please check your database configuration in .env file');
-      console.error('💡 Full error:', err);
-    });
-}, 100);
+// Skip database initialization in test environment
+if (process.env.NODE_ENV !== 'test') {
+  // Delay initialization slightly to ensure server is ready
+  setTimeout(() => {
+    initDatabase()
+      .then(() => {
+        console.log('✅ Database ready');
+      })
+      .catch(err => {
+        console.error('❌ Database initialization failed:', err.message);
+        console.error('💡 The server will start, but database operations may fail.');
+        console.error('💡 Please check your database configuration in .env file');
+        console.error('💡 Full error:', err);
+      });
+  }, 100);
+}
 
 // Routes
 app.get('/', (req, res) => {
