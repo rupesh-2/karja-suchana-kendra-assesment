@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from '../../context/AuthContext';
+import { ThemeProvider } from '../../context/ThemeContext';
 import Login from '../../pages/Login';
 import authService from '../../services/authService';
 
@@ -11,9 +12,11 @@ describe('Login Page', () => {
   const renderLogin = () => {
     return render(
       <BrowserRouter>
-        <AuthProvider>
-          <Login />
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <Login />
+          </AuthProvider>
+        </ThemeProvider>
       </BrowserRouter>
     );
   };
@@ -49,7 +52,10 @@ describe('Login Page', () => {
   it('should require username and password', () => {
     renderLogin();
 
+    const usernameInput = screen.getByLabelText(/username/i);
+    const passwordInput = screen.getByLabelText(/password/i);
     const submitButton = screen.getByRole('button', { name: /login/i });
+    
     fireEvent.click(submitButton);
 
     expect(usernameInput).toBeInvalid();
