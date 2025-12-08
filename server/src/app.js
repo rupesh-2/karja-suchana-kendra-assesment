@@ -16,6 +16,9 @@ const initDatabase = require('./config/initDatabase');
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const roleRoutes = require('./routes/roleRoutes');
+const profileRoutes = require('./modules/profile/profileRoutes');
+const logRoutes = require('./modules/logs/logRoutes');
+const notificationRoutes = require('./modules/notifications/notificationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -51,6 +54,9 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
+app.use('/api/profile', profileRoutes);
+app.use('/api/logs', logRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
