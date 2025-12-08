@@ -8,15 +8,28 @@
 - ✅ Added refresh token endpoint `/api/auth/refresh`
 - ✅ Updated logout to revoke refresh tokens
 - ✅ Added IP address and user agent tracking for refresh tokens
+- ✅ Access tokens expire in 15 minutes (configurable via `ACCESS_TOKEN_EXPIRY`)
+- ✅ Refresh tokens expire in 7 days and stored in database for revocation
 
 ### 2. Soft Delete for Users
 - ✅ Added `deleted_at` field to User model
 - ✅ Updated authentication middleware to check for soft deleted users
 - ✅ Updated login to reject soft deleted accounts
+- ✅ Updated UserModel with soft delete methods (delete, restore)
+- ✅ Soft delete preserves data while preventing access
 
 ### 3. Activity Logs / Audit Trail
 - ✅ Enhanced LogService with IP address and user agent tracking
 - ✅ Fixed timestamp field references
+- ✅ Logs include IP address, user agent, and action details
+
+### 4. Search + Filter + Pagination
+- ✅ Added search functionality (username, email)
+- ✅ Added role filter
+- ✅ Added status filter (all, active, deleted)
+- ✅ Added pagination with configurable page size
+- ✅ Added sorting (sortBy, sortOrder)
+- ✅ Response includes pagination metadata
 
 ## 🚧 In Progress
 
@@ -31,14 +44,20 @@
 
 ## 📋 Pending Features
 
+### 5. System Settings Page
+- ✅ SystemSettings model created
+- ⏳ Create settings controller and routes
+- ⏳ Create frontend settings page
+- ⏳ Default settings initialization
+
 ### 6. Password Reset Enhancement
 - ✅ Basic implementation exists
 - ⏳ Need email integration
 
-### 7. System Settings Page
-- ⏳ Create SystemSettings model
-- ⏳ Create settings controller and routes
-- ⏳ Create frontend settings page
+### 7. Frontend Refresh Token Handling
+- ⏳ Update authService to store refresh token
+- ⏳ Implement auto-refresh logic
+- ⏳ Handle token expiration gracefully
 
 ### 8. Search + Filter + Pagination
 - ⏳ Add to User Management table
