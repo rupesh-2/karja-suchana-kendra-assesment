@@ -38,8 +38,21 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+*.lcov
+client/coverage/
+server/coverage/
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Uploads
+server/uploads/
+
+# Test databases
+*.sqlite
+*.sqlite3
 
 # Misc
 *.pem
 .cache/
-
