@@ -2,12 +2,26 @@
   min-height: 100vh;
 }
 
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
 .static-section,
 .dynamic-section,
 .superadmin-section {
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .static-section:last-child,
@@ -19,23 +33,26 @@
 .static-section h2,
 .dynamic-section h2,
 .superadmin-section h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
+  transition: color 0.3s ease;
 }
 
 .static-section p,
 .dynamic-section p,
 .superadmin-section p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 10px 0;
+  transition: color 0.3s ease;
 }
 
 .superadmin-section {
-  background-color: #f3e5f5;
+  background-color: var(--superadmin-section-bg);
   padding: 20px;
   border-radius: 8px;
-  border: 2px solid #7b1fa2;
+  border: 2px solid var(--superadmin-section-border);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .permissions-list {
@@ -47,11 +64,12 @@
 .permission-badge {
   display: inline-block;
   padding: 3px 8px;
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: var(--permission-badge-bg);
+  color: var(--permission-badge-text);
   border-radius: 4px;
   font-size: 11px;
   font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .modal-overlay {
@@ -60,26 +78,31 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--modal-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  transition: background-color 0.3s ease;
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 8px;
   padding: 30px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 40px var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modal-content h2 {
   margin-bottom: 20px;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .modal-actions {

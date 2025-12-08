@@ -43,6 +43,22 @@
   --alert-info-bg: #d1ecf1;
   --alert-info-text: #0c5460;
   --alert-info-border: #bee5eb;
+  /* Dashboard colors for light theme - gradients handled in component CSS */
+  /* Role badge colors for light theme */
+  --role-readonly-bg: #e3f2fd;
+  --role-readonly-text: #1976d2;
+  --role-admin-bg: #fff3e0;
+  --role-admin-text: #f57c00;
+  --role-superadmin-bg: #f3e5f5;
+  --role-superadmin-text: #7b1fa2;
+  /* Modal colors for light theme */
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+  /* Permission badge colors for light theme */
+  --permission-badge-bg: #e3f2fd;
+  --permission-badge-text: #1976d2;
+  /* Superadmin section colors for light theme */
+  --superadmin-section-bg: #f3e5f5;
+  --superadmin-section-border: #7b1fa2;
 }
 
 /* Dark Theme */
@@ -83,6 +99,22 @@
   --alert-info-bg: #1e3a3f;
   --alert-info-text: #7dd8e8;
   --alert-info-border: #2d5a6a;
+  /* Dashboard colors for dark theme - gradients handled in component CSS */
+  /* Role badge colors for dark theme */
+  --role-readonly-bg: #1e3a5f;
+  --role-readonly-text: #90caf9;
+  --role-admin-bg: #5a3d1e;
+  --role-admin-text: #ffb74d;
+  --role-superadmin-bg: #4a1f5a;
+  --role-superadmin-text: #ce93d8;
+  /* Modal colors for dark theme */
+  --modal-overlay: rgba(0, 0, 0, 0.7);
+  /* Permission badge colors for dark theme */
+  --permission-badge-bg: #1e3a5f;
+  --permission-badge-text: #90caf9;
+  /* Superadmin section colors for dark theme */
+  --superadmin-section-bg: #4a1f5a;
+  --superadmin-section-border: #9c27b0;
 }
 
 body {

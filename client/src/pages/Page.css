@@ -4,14 +4,16 @@
 
 .page h1 {
   margin-bottom: 30px;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .static-section,
 .dynamic-section {
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .static-section:last-child,
@@ -21,53 +23,63 @@
 
 .static-section h2,
 .dynamic-section h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
+  transition: color 0.3s ease;
 }
 
 .static-section p,
 .dynamic-section p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 10px 0;
+  transition: color 0.3s ease;
 }
 
 .permission-block {
   margin: 20px 0;
   padding: 15px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid var(--accent-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .permission-block h3 {
   margin-bottom: 10px;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .superadmin-block {
-  background-color: #f3e5f5;
-  border-left-color: #7b1fa2;
+  background-color: var(--superadmin-section-bg);
+  border-left-color: var(--superadmin-section-border);
 }
 
 .role-content {
   margin: 20px 0;
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .role-content h3 {
   margin-bottom: 15px;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .analytics-placeholder {
   padding: 30px;
-  background-color: white;
+  background-color: var(--bg-primary);
   border-radius: 8px;
   text-align: center;
   margin-top: 15px;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .settings-grid {
@@ -79,24 +91,27 @@
 
 .setting-item {
   padding: 20px;
-  background-color: #f8f9fa;
+  background-color: var(--bg-secondary);
   border-radius: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .setting-item h3 {
   margin-bottom: 10px;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .setting-item p {
   margin-bottom: 15px;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 14px;
+  transition: color 0.3s ease;
 }
 
 .superadmin-setting {
-  background-color: #f3e5f5;
-  border-color: #7b1fa2;
+  background-color: var(--superadmin-section-bg);
+  border-color: var(--superadmin-section-border);
 }
 

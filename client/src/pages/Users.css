@@ -11,14 +11,16 @@
 
 .page-header h1 {
   margin: 0;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .static-section,
 .dynamic-section {
   margin-bottom: 30px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
+  transition: border-color 0.3s ease;
 }
 
 .static-section:last-child,
@@ -28,14 +30,16 @@
 
 .static-section h2,
 .dynamic-section h2 {
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 15px;
+  transition: color 0.3s ease;
 }
 
 .static-section p,
 .dynamic-section p {
-  color: #666;
+  color: var(--text-secondary);
   line-height: 1.6;
+  transition: color 0.3s ease;
 }
 
 .role-badge {
@@ -45,21 +49,22 @@
   font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .role-readonly {
-  background-color: #e3f2fd;
-  color: #1976d2;
+  background-color: var(--role-readonly-bg);
+  color: var(--role-readonly-text);
 }
 
 .role-admin {
-  background-color: #fff3e0;
-  color: #f57c00;
+  background-color: var(--role-admin-bg);
+  color: var(--role-admin-text);
 }
 
 .role-superadmin {
-  background-color: #f3e5f5;
-  color: #7b1fa2;
+  background-color: var(--role-superadmin-bg);
+  color: var(--role-superadmin-text);
 }
 
 .action-buttons {
@@ -73,26 +78,31 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: var(--modal-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  transition: background-color 0.3s ease;
 }
 
 .modal-content {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 8px;
   padding: 30px;
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 10px 40px var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .modal-content h2 {
   margin-bottom: 20px;
-  color: #333;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
 }
 
 .modal-actions {
