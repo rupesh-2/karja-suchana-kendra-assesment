@@ -60,11 +60,6 @@ async function initDatabase() {
     await sequelize.sync({ alter: false });
     console.log("✅ Database tables synchronized");
 
-    // Import new models to ensure they're registered
-    require("../models/UserLog");
-    require("../models/Notification");
-    require("../models/File");
-
     // Create default roles
     const [readonlyRole, readonlyCreated] = await Role.findOrCreate({
       where: { id: 1 },
