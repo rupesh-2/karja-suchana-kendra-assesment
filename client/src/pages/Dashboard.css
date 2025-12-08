@@ -4,8 +4,9 @@
   transition: color 0.3s ease;
 }
 
-.dashboard-welcome {
+.dashboard-welcome.card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  background-color: transparent !important;
   color: #ffffff !important;
   margin-bottom: 30px;
   border: none !important;
@@ -15,8 +16,9 @@
     color 0.3s ease;
 }
 
-[data-theme='dark'] .dashboard-welcome {
+[data-theme='dark'] .dashboard-welcome.card {
   background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+  background-color: transparent !important;
   color: #e0e0e0 !important;
   border: none !important;
 }
