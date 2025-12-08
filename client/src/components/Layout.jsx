@@ -60,9 +60,15 @@ const Layout = () => {
           </div>
           <div className="nav-user">
             <ThemeToggle />
-            <span className="user-info">
-              {user ? `${user.username} (${user.role})` : 'Loading...'}
-            </span>
+            <Link
+              to="/profile"
+              className={`nav-link ${isActive('/profile') ? 'active' : ''}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <span className="user-info">
+                {user ? `${user.username} (${user.role})` : 'Loading...'}
+              </span>
+            </Link>
             <button onClick={logout} className="btn btn-secondary">
               Logout
             </button>

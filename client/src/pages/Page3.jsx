@@ -1,8 +1,10 @@
 import { useAuth } from '../context/AuthContext'
+import { useNavigate } from 'react-router-dom'
 import './Page.css'
 
 const Page3 = () => {
   const { user, hasPermission } = useAuth()
+  const navigate = useNavigate()
 
   return (
     <div className="page">
@@ -23,7 +25,12 @@ const Page3 = () => {
               <div className="setting-item">
                 <h3>Profile Settings</h3>
                 <p>All users can access their profile settings.</p>
-                <button className="btn btn-secondary">Edit Profile</button>
+                <button 
+                  className="btn btn-secondary"
+                  onClick={() => navigate('/profile')}
+                >
+                  Edit Profile
+                </button>
               </div>
 
               {hasPermission('view_users') && (

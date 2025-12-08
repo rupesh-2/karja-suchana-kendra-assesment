@@ -14,7 +14,7 @@ class UserModel {
         as: 'role',
         attributes: ['id', 'name', 'description']
       }],
-      attributes: ['id', 'username', 'email', 'created_at', 'updated_at', 'role_id', 'deleted_at'],
+      attributes: ['id', 'username', 'email', 'created_at', 'updated_at', 'role_id', 'deleted_at', 'avatar'],
       order: [['created_at', 'DESC']]
     });
   }

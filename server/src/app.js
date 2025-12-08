@@ -69,6 +69,8 @@ app.use('/api/settings', settingsRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
+// Serve avatar images
+app.use('/uploads/avatars', express.static('uploads/avatars'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

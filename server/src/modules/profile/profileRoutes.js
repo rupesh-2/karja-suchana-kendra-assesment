@@ -8,6 +8,7 @@ router.use(authenticate);
 
 router.get('/me', profileController.getProfile);
 router.put('/update', profileController.updateProfile);
+router.post('/avatar', profileController.uploadAvatar);
 
 module.exports = router;
 
