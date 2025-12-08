@@ -48,8 +48,8 @@ async function initDatabase() {
       }
     }
 
-    // Sync all models (create tables if they don't exist)
-    await sequelize.sync({ alter: false });
+    // Sync all models (create tables if they don't exist, alter existing tables to add new columns)
+    await sequelize.sync({ alter: true });
     console.log('✅ Database tables synchronized');
 
     // Create default roles

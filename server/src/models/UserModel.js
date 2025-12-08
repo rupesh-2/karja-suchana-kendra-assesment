@@ -20,27 +20,60 @@ class UserModel {
   }
 
   static async findById(id) {
-    const user = await User.findByPk(id, {
-      include: [{
-        model: Role,
-        as: 'role',
-        attributes: ['id', 'name', 'description']
-      }],
-      attributes: ['id', 'username', 'email', 'created_at', 'updated_at', 'role_id']
-    });
-    return user;
+    try {
+      const user = await User.findByPk(id, {
+        include: [{
+          model: Role,
+          as: 'role',
+          attributes: ['id', 'name', 'description']
+        }]
+      });
+      return user;
+    } catch (error) {
+      // Handle case where deleted_at column doesn't exist yet
+      if (error.name === 'SequelizeDatabaseError' && error.message.includes('deleted_at')) {
+        const user = await User.findByPk(id, {
+          include: [{
+            model: Role,
+            as: 'role',
+            attributes: ['id', 'name', 'description']
+          }],
+          attributes: { exclude: ['deleted_at'] }
+        });
+        return user;
+      }
+      throw error;
+    }
   }
 
   static async findByUsername(username) {
-    const user = await User.findOne({
-      where: { username },
-      include: [{
-        model: Role,
-        as: 'role',
-        attributes: ['id', 'name', 'description']
-      }]
-    });
-    return user;
+    try {
+      const user = await User.findOne({
+        where: { username },
+        include: [{
+          model: Role,
+          as: 'role',
+          attributes: ['id', 'name', 'description']
+        }]
+      });
+      return user;
+    } catch (error) {
+      // Handle case where deleted_at column doesn't exist yet
+      if (error.name === 'SequelizeDatabaseError' && error.message.includes('deleted_at')) {
+        // Retry without deleted_at in attributes
+        const user = await User.findOne({
+          where: { username },
+          include: [{
+            model: Role,
+            as: 'role',
+            attributes: ['id', 'name', 'description']
+          }],
+          attributes: { exclude: ['deleted_at'] }
+        });
+        return user;
+      }
+      throw error;
+    }
   }
 
   static async findByEmail(email) {

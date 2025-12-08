@@ -10,22 +10,55 @@ const login = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
+      return res.status(400).json({ 
+        error: 'Invalid credentials',
+        message: 'Username and password are required' 
+      });
     }
 
+    // Always perform password comparison to prevent timing attacks
+    // Use a dummy hash comparison if user doesn't exist
     const user = await UserModel.findByUsername(username);
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    const dummyHash = '$2a$10$dummyhashforsecuritypurposesonly1234567890123456789012';
+    const providedHash = user ? user.password : dummyHash;
+    
+    // Perform password comparison (always takes same time regardless of user existence)
+    const isPasswordValid = await bcrypt.compare(password, providedHash);
+
+    // Security: Don't reveal if user exists or not
+    // Return same error message for both invalid user and invalid password
+    if (!user || !isPasswordValid) {
+      // Log failed login attempt (without revealing if user exists)
+      if (user) {
+        await LogService.createLog(
+          user.id, 
+          'login_failed', 
+          user.id, 
+          req.ip || req.connection?.remoteAddress, 
+          `Failed login attempt from ${req.get('user-agent') || 'Unknown'}`
+        );
+      }
+      
+      return res.status(401).json({ 
+        error: 'Invalid credentials',
+        message: 'The username or password you entered is incorrect. Please try again.' 
+      });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Check if user is soft deleted
+    // Check if user is soft deleted (only check if user exists and password is valid)
     if (user.deleted_at) {
-      return res.status(401).json({ error: 'Account has been deactivated' });
+      await LogService.createLog(
+        user.id, 
+        'login_blocked_deleted', 
+        user.id, 
+        req.ip || req.connection?.remoteAddress, 
+        `Login attempt blocked - account deactivated`
+      );
+      
+      return res.status(401).json({ 
+        error: 'Account deactivated',
+        message: 'This account has been deactivated. Please contact an administrator for assistance.' 
+      });
     }
 
     const roleName = user.role ? user.role.name : null;
@@ -67,7 +100,21 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Login failed' });
+    
+    // Handle database schema errors gracefully
+    if (error.name === 'SequelizeDatabaseError' && error.message.includes('deleted_at')) {
+      console.error('⚠️  Database schema needs update. Please restart the server to sync schema.');
+      return res.status(500).json({ 
+        error: 'System error',
+        message: 'The system is currently being updated. Please try again in a moment.' 
+      });
+    }
+    
+    // Generic error message for security (don't reveal system details)
+    res.status(500).json({ 
+      error: 'Login failed',
+      message: 'An error occurred during login. Please try again later.' 
+    });
   }
 };
 
