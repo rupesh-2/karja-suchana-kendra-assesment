@@ -3,7 +3,9 @@ import api from './api'
 const userService = {
   async getAll() {
     const response = await api.get('/users')
-    return response.data
+    // Backend returns { users: [...], pagination: {...} }
+    // Return just the users array for backward compatibility
+    return response.data.users || response.data
   },
 
   async getById(id) {

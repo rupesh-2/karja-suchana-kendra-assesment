@@ -5,33 +5,48 @@
 }
 
 .dashboard-welcome {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #ffffff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #ffffff !important;
   margin-bottom: 30px;
+  border: none !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
   transition:
     background 0.3s ease,
     color 0.3s ease;
 }
 
 [data-theme='dark'] .dashboard-welcome {
-  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
-  color: #e0e0e0;
+  background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
+  color: #e0e0e0 !important;
+  border: none !important;
 }
 
 .dashboard-welcome h2 {
   margin-bottom: 10px;
-  color: inherit;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .dashboard-welcome h2 {
+  color: #e0e0e0 !important;
 }
 
 .dashboard-welcome p {
   margin: 5px 0;
-  opacity: 0.9;
-  color: inherit;
+  opacity: 0.95;
+  color: #ffffff !important;
+}
+
+[data-theme='dark'] .dashboard-welcome p {
+  color: #e0e0e0 !important;
 }
 
 .dashboard-welcome strong {
-  color: inherit;
+  color: #ffffff !important;
   font-weight: 600;
+}
+
+[data-theme='dark'] .dashboard-welcome strong {
+  color: #e0e0e0 !important;
 }
 
 .dashboard-grid {
