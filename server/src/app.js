@@ -25,10 +25,12 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -70,7 +72,7 @@ app.use('/uploads', express.static('uploads'));
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   res.status(err.status || 500).json({
-    error: err.message || 'Internal server error'
+    error: err.message || 'Internal server error',
   });
 });
 
@@ -86,7 +88,7 @@ const server = app.listen(PORT, () => {
 });
 
 // Handle server errors
-server.on('error', (err) => {
+server.on('error', err => {
   if (err.code === 'EADDRINUSE') {
     console.error(`❌ Port ${PORT} is already in use. Please use a different port.`);
   } else {
@@ -96,7 +98,7 @@ server.on('error', (err) => {
 });
 
 // Handle uncaught exceptions (set up early to catch all errors)
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   console.error('❌ Uncaught Exception:', err.message);
   console.error('Stack:', err.stack);
   // Don't exit - let the server try to continue
@@ -113,4 +115,3 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 module.exports = app;
-

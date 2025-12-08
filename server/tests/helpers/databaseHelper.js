@@ -19,13 +19,11 @@ async function setupTestDatabase() {
         {
           host: process.env.DB_HOST || 'localhost',
           dialect: 'mysql',
-          logging: false
+          logging: false,
         }
       );
 
-      await tempSequelize.query(
-        `CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`
-      );
+      await tempSequelize.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`);
       await tempSequelize.close();
 
       // Now authenticate with test database
@@ -46,7 +44,7 @@ async function setupTestDatabase() {
 async function cleanupTestDatabase(dropDatabase = false) {
   try {
     await sequelize.close();
-    
+
     if (dropDatabase && process.env.NODE_ENV === 'test') {
       const { Sequelize } = require('sequelize');
       const tempSequelize = new Sequelize(
@@ -56,7 +54,7 @@ async function cleanupTestDatabase(dropDatabase = false) {
         {
           host: process.env.DB_HOST || 'localhost',
           dialect: 'mysql',
-          logging: false
+          logging: false,
         }
       );
 
@@ -70,6 +68,5 @@ async function cleanupTestDatabase(dropDatabase = false) {
 
 module.exports = {
   setupTestDatabase,
-  cleanupTestDatabase
+  cleanupTestDatabase,
 };
-
