@@ -27,9 +27,18 @@ const Users = () => {
 
   const fetchUsers = async () => {
     try {
-      const data = await userService.getAll()
-      setUsers(data)
+      const response = await userService.getAll()
+      // Backend returns { users: [...], pagination: {...} }
+      if (response.users) {
+        setUsers(response.users)
+      } else if (Array.isArray(response)) {
+        // Backward compatibility: if it's an array, use it directly
+        setUsers(response)
+      } else {
+        setUsers([])
+      }
     } catch (err) {
+      console.error('Fetch users error:', err)
       setError(err.response?.data?.error || 'Failed to fetch users')
     } finally {
       setLoading(false)
@@ -128,7 +137,8 @@ const Users = () => {
               <h2>Dynamic Section - User List</h2>
               <p>This section is only visible to users with permission to view users.</p>
               
-              <table className="table">
+              <div className="table-wrapper">
+                <table className="table">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -178,6 +188,7 @@ const Users = () => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           ) : (
             <div className="dynamic-section">

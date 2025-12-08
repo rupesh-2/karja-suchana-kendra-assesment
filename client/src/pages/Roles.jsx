@@ -113,7 +113,8 @@ const Roles = () => {
               <h2>Dynamic Section - Roles List</h2>
               <p>This section is only visible to users with permission to view roles.</p>
               
-              <table className="table">
+              <div className="table-wrapper">
+                <table className="table">
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -171,6 +172,7 @@ const Roles = () => {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           ) : (
             <div className="dynamic-section">
