@@ -1,6 +1,7 @@
 const request = require('supertest');
 const { sequelize, User, Role } = require('../../src/models');
 const bcrypt = require('bcryptjs');
+const { setupTestDatabase } = require('../helpers/databaseHelper');
 
 // Create a test app instance
 let app;
@@ -10,41 +11,13 @@ describe('Authentication API Integration Tests', () => {
   let testRole;
 
   beforeAll(async () => {
-    // Import app after environment is set
+    // Setup test database (creates DB and tables)
+    await setupTestDatabase();
+
+    // Import app after database is set up
     app = require('../../src/app');
 
-    // Ensure test database exists
-    try {
-      await sequelize.authenticate();
-    } catch (error) {
-      if (error.original && error.original.code === 'ER_BAD_DB_ERROR') {
-        // Create test database
-        const { Sequelize } = require('sequelize');
-        const tempSequelize = new Sequelize(
-          '',
-          process.env.DB_USER || 'root',
-          process.env.DB_PASSWORD || '',
-          {
-            host: process.env.DB_HOST || 'localhost',
-            dialect: 'mysql',
-            logging: false,
-          }
-        );
-
-        await tempSequelize.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME};`);
-        await tempSequelize.close();
-
-        // Now authenticate with test database
-        await sequelize.authenticate();
-      } else {
-        throw error;
-      }
-    }
-
-    // Sync database (create tables)
-    await sequelize.sync({ force: true });
-
-    // Create test role if it doesn't exist
+    // Create test role
     [testRole] = await Role.findOrCreate({
       where: { id: 1 },
       defaults: {
@@ -62,7 +35,7 @@ describe('Authentication API Integration Tests', () => {
       password: hashedPassword,
       role_id: 1,
     });
-  });
+  }, 30000); // 30 second timeout for setup
 
   afterAll(async () => {
     // Cleanup
@@ -73,7 +46,7 @@ describe('Authentication API Integration Tests', () => {
       // Close database connection
       await sequelize.close();
     } catch (error) {
-      console.error('Cleanup error:', error);
+      // Ignore cleanup errors in tests
     }
   });
 
