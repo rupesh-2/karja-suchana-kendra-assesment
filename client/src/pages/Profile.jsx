@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import profileService from '../services/profileService'
 import './Profile.css'
 
 const Profile = () => {
+  const { t } = useTranslation()
   const { user: authUser } = useAuth()
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -35,7 +37,7 @@ const Profile = () => {
       })
       setAvatarPreview(data.avatar ? `/api${data.avatar}` : null)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch profile')
+      setError(err.response?.data?.error || t('profile.failedToUpdate'))
     } finally {
       setLoading(false)
     }
@@ -54,13 +56,13 @@ const Profile = () => {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        setError('Please select an image file')
+        setError(t('profile.failedToUpload'))
         return
       }
 
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        setError('Image size must be less than 5MB')
+        setError(t('profile.failedToUpload'))
         return
       }
 
@@ -81,12 +83,12 @@ const Profile = () => {
     setError('')
     try {
       const response = await profileService.uploadAvatar(file)
-      setSuccess('Avatar uploaded successfully')
+      setSuccess(t('profile.avatarUploaded'))
       setProfile(prev => ({ ...prev, avatar: response.avatar }))
       setAvatarPreview(`/api${response.avatar}`)
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to upload avatar')
+      setError(err.response?.data?.error || t('profile.failedToUpload'))
       setAvatarPreview(profile?.avatar ? `/api${profile.avatar}` : null)
     } finally {
       setUploading(false)
@@ -112,13 +114,13 @@ const Profile = () => {
       }
 
       if (Object.keys(updateData).length === 0) {
-        setError('No changes to save')
+        setError(t('profile.noChanges'))
         return
       }
 
       const updatedProfile = await profileService.updateProfile(updateData)
       setProfile(updatedProfile)
-      setSuccess('Profile updated successfully')
+      setSuccess(t('profile.profileUpdated'))
       setEditing(false)
       
       // Update auth context if username changed
@@ -129,7 +131,7 @@ const Profile = () => {
       
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to update profile')
+      setError(err.response?.data?.error || t('profile.failedToUpdate'))
     }
   }
 
@@ -149,7 +151,7 @@ const Profile = () => {
       <div className="profile-page">
         <div className="container">
           <div className="card">
-            <div style={{ padding: '40px', textAlign: 'center' }}>Loading...</div>
+            <div style={{ padding: '40px', textAlign: 'center' }}>{t('common.loading')}</div>
           </div>
         </div>
       </div>
@@ -171,7 +173,7 @@ const Profile = () => {
   return (
     <div className="profile-page">
       <div className="container">
-        <h1 className="page-title">My Profile</h1>
+        <h1 className="page-title">{t('profile.title')}</h1>
 
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
@@ -189,7 +191,7 @@ const Profile = () => {
                 )}
                 <div className="avatar-overlay">
                   <label htmlFor="avatar-upload" className="avatar-upload-label">
-                    {uploading ? 'Uploading...' : '📷 Change'}
+                    {uploading ? t('profile.uploading') : `📷 ${t('profile.changeAvatar')}`}
                   </label>
                   <input
                     type="file"
@@ -214,29 +216,29 @@ const Profile = () => {
           {!editing ? (
             <div className="profile-details">
               <div className="detail-item">
-                <label>Username</label>
+                <label>{t('profile.username')}</label>
                 <p>{profile.username}</p>
               </div>
               <div className="detail-item">
-                <label>Email</label>
+                <label>{t('profile.email')}</label>
                 <p>{profile.email}</p>
               </div>
               <div className="detail-item">
-                <label>Role</label>
+                <label>{t('profile.role')}</label>
                 <p>{profile.role}</p>
               </div>
               <div className="detail-item">
-                <label>Member Since</label>
+                <label>{t('profile.memberSince')}</label>
                 <p>{new Date(profile.createdAt).toLocaleDateString()}</p>
               </div>
               <button onClick={() => setEditing(true)} className="btn btn-primary">
-                Edit Profile
+                {t('profile.editProfile')}
               </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="profile-form">
               <div className="form-group">
-                <label htmlFor="username">Username</label>
+                <label htmlFor="username">{t('profile.username')}</label>
                 <input
                   type="text"
                   id="username"
@@ -248,7 +250,7 @@ const Profile = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="email">Email</label>
+                <label htmlFor="email">{t('profile.email')}</label>
                 <input
                   type="email"
                   id="email"
@@ -260,35 +262,35 @@ const Profile = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="currentPassword">Current Password (required to change password)</label>
+                <label htmlFor="currentPassword">{t('profile.currentPassword')}</label>
                 <input
                   type="password"
                   id="currentPassword"
                   name="currentPassword"
                   value={formData.currentPassword}
                   onChange={handleInputChange}
-                  placeholder="Enter current password to change password"
+                  placeholder={t('profile.enterCurrentPassword')}
                 />
               </div>
 
               <div className="form-group">
-                <label htmlFor="password">New Password (optional)</label>
+                <label htmlFor="password">{t('profile.newPassword')}</label>
                 <input
                   type="password"
                   id="password"
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Leave blank to keep current password"
+                  placeholder={t('profile.leaveBlankPassword')}
                 />
               </div>
 
               <div className="form-actions">
                 <button type="submit" className="btn btn-primary">
-                  Save Changes
+                  {t('profile.saveChanges')}
                 </button>
                 <button type="button" onClick={handleCancel} className="btn btn-secondary">
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </form>

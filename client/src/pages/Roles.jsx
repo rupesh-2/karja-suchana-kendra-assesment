@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import roleService from '../services/roleService'
 import './Roles.css'
 
 const Roles = () => {
+  const { t } = useTranslation()
   const { hasPermission, hasRole } = useAuth()
   const [roles, setRoles] = useState([])
   const [loading, setLoading] = useState(true)
@@ -25,7 +27,7 @@ const Roles = () => {
       const data = await roleService.getAll()
       setRoles(data)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to fetch roles')
+      setError(err.response?.data?.error || t('roles.failedToFetch'))
     } finally {
       setLoading(false)
     }
@@ -47,15 +49,15 @@ const Roles = () => {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this role?')) return
+    if (!window.confirm(t('roles.deleteConfirm'))) return
 
     try {
       await roleService.delete(id)
-      setSuccess('Role deleted successfully')
+      setSuccess(t('roles.roleDeleted'))
       fetchRoles()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to delete role')
+      setError(err.response?.data?.error || t('roles.failedToFetch'))
       setTimeout(() => setError(''), 3000)
     }
   }
@@ -68,32 +70,32 @@ const Roles = () => {
     try {
       if (editingRole) {
         await roleService.update(editingRole.id, formData)
-        setSuccess('Role updated successfully')
+        setSuccess(t('roles.roleUpdated'))
       } else {
         await roleService.create(formData)
-        setSuccess('Role created successfully')
+        setSuccess(t('roles.roleCreated'))
       }
       setShowModal(false)
       fetchRoles()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Operation failed')
+      setError(err.response?.data?.error || t('roles.operationFailed'))
       setTimeout(() => setError(''), 3000)
     }
   }
 
   if (loading) {
-    return <div className="container">Loading...</div>
+    return <div className="container">{t('common.loading')}</div>
   }
 
   return (
     <div className="roles-page">
       <div className="container">
         <div className="page-header">
-          <h1>Roles & Permissions</h1>
+          <h1>{t('roles.title')}</h1>
           {hasRole('superadmin') && (
             <button onClick={handleCreate} className="btn btn-primary">
-              Add New Role
+              {t('roles.addRole')}
             </button>
           )}
         </div>
@@ -103,25 +105,25 @@ const Roles = () => {
 
         <div className="card">
           <div className="static-section">
-            <h2>Static Section</h2>
-            <p>This section is visible to all authenticated users. It provides general information about the roles and permissions system.</p>
-            <p>The system supports three default roles: Read-Only, Admin, and Super Administrator.</p>
+            <h2>{t('dashboard.staticSection')}</h2>
+            <p>{t('roles.staticInfo')}</p>
+            <p>{t('roles.systemSupports')}</p>
           </div>
 
           {hasPermission('view_roles') ? (
             <div className="dynamic-section">
-              <h2>Dynamic Section - Roles List</h2>
-              <p>This section is only visible to users with permission to view roles.</p>
+              <h2>{t('roles.roleList')}</h2>
+              <p>{t('roles.roleListDesc')}</p>
               
               <div className="table-wrapper">
                 <table className="table">
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th>Permissions</th>
-                    {hasRole('superadmin') && <th>Actions</th>}
+                    <th>{t('roles.id')}</th>
+                    <th>{t('roles.name')}</th>
+                    <th>{t('roles.description')}</th>
+                    <th>{t('roles.permissions')}</th>
+                    {hasRole('superadmin') && <th>{t('common.actions')}</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -133,7 +135,7 @@ const Roles = () => {
                           {role.name}
                         </span>
                       </td>
-                      <td>{role.description || 'No description'}</td>
+                      <td>{role.description || t('roles.noPermissions')}</td>
                       <td>
                         {role.permissions ? (
                           <div className="permissions-list">
@@ -144,7 +146,7 @@ const Roles = () => {
                             ))}
                           </div>
                         ) : (
-                          'No permissions'
+                          t('roles.noPermissions')
                         )}
                       </td>
                       {hasRole('superadmin') && (
@@ -155,14 +157,14 @@ const Roles = () => {
                               className="btn btn-secondary"
                               style={{ marginRight: '5px' }}
                             >
-                              Edit
+                              {t('common.edit')}
                             </button>
                             {![1, 2, 3].includes(role.id) && (
                               <button
                                 onClick={() => handleDelete(role.id)}
                                 className="btn btn-danger"
                               >
-                                Delete
+                                {t('common.delete')}
                               </button>
                             )}
                           </div>
@@ -176,15 +178,15 @@ const Roles = () => {
             </div>
           ) : (
             <div className="dynamic-section">
-              <p>You don't have permission to view the roles list.</p>
+              <p>{t('users.noPermission')}</p>
             </div>
           )}
 
           {hasRole('superadmin') && (
             <div className="superadmin-section">
-              <h2>Super Admin Exclusive Section</h2>
-              <p>This section is only visible to Super Administrators.</p>
-              <p>You have full control over roles and permissions management.</p>
+              <h2>{t('dashboard.superAdminSection')}</h2>
+              <p>{t('dashboard.superAdminDesc')}</p>
+              <p>{t('dashboard.superAdminAccess')}</p>
             </div>
           )}
         </div>
@@ -192,10 +194,10 @@ const Roles = () => {
         {showModal && hasRole('superadmin') && (
           <div className="modal-overlay" onClick={() => setShowModal(false)}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>{editingRole ? 'Edit Role' : 'Create Role'}</h2>
+              <h2>{editingRole ? t('roles.editRole') : t('roles.createRole')}</h2>
               <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                  <label>Role Name</label>
+                  <label>{t('roles.name')}</label>
                   <input
                     type="text"
                     value={formData.name}
@@ -205,7 +207,7 @@ const Roles = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Description</label>
+                  <label>{t('roles.description')}</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -215,14 +217,14 @@ const Roles = () => {
                 </div>
                 <div className="modal-actions">
                   <button type="submit" className="btn btn-primary">
-                    {editingRole ? 'Update' : 'Create'}
+                    {editingRole ? t('common.update') : t('common.create')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowModal(false)}
                     className="btn btn-secondary"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                 </div>
               </form>

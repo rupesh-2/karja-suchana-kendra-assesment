@@ -11,6 +11,7 @@ import Page2 from './pages/Page2'
 import Page3 from './pages/Page3'
 import Profile from './pages/Profile'
 import Layout from './components/Layout'
+import './i18n/config'
 import './App.css'
 
 function App() {

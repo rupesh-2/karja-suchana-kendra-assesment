@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import userService from '../services/userService'
 import roleService from '../services/roleService'
 import './Users.css'
 
 const Users = () => {
+  const { t } = useTranslation()
   const { hasPermission } = useAuth()
   const [users, setUsers] = useState([])
   const [roles, setRoles] = useState([])
@@ -39,7 +41,7 @@ const Users = () => {
       }
     } catch (err) {
       console.error('Fetch users error:', err)
-      setError(err.response?.data?.error || 'Failed to fetch users')
+      setError(err.response?.data?.error || t('users.failedToFetch'))
     } finally {
       setLoading(false)
     }
@@ -72,15 +74,15 @@ const Users = () => {
   }
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return
+    if (!window.confirm(t('users.deleteConfirm'))) return
 
     try {
       await userService.delete(id)
-      setSuccess('User deleted successfully')
+      setSuccess(t('users.userDeleted'))
       fetchUsers()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Failed to delete user')
+      setError(err.response?.data?.error || t('users.failedToFetch'))
       setTimeout(() => setError(''), 3000)
     }
   }
@@ -93,16 +95,16 @@ const Users = () => {
     try {
       if (editingUser) {
         await userService.update(editingUser.id, formData)
-        setSuccess('User updated successfully')
+        setSuccess(t('users.userUpdated'))
       } else {
         await userService.create(formData)
-        setSuccess('User created successfully')
+        setSuccess(t('users.userCreated'))
       }
       setShowModal(false)
       fetchUsers()
       setTimeout(() => setSuccess(''), 3000)
     } catch (err) {
-      setError(err.response?.data?.error || 'Operation failed')
+      setError(err.response?.data?.error || t('users.operationFailed'))
       setTimeout(() => setError(''), 3000)
     }
   }
@@ -164,23 +166,23 @@ const Users = () => {
                       {hasPermission('edit_users') && (
                         <td>
                           <div className="action-buttons">
-                            {hasPermission('edit_users') && (
-                              <button
-                                onClick={() => handleEdit(user)}
-                                className="btn btn-secondary"
-                                style={{ marginRight: '5px' }}
-                              >
-                                Edit
-                              </button>
-                            )}
-                            {hasPermission('delete_users') && (
-                              <button
-                                onClick={() => handleDelete(user.id)}
-                                className="btn btn-danger"
-                              >
-                                Delete
-                              </button>
-                            )}
+                                {hasPermission('edit_users') && (
+                                        <button
+                                          onClick={() => handleEdit(user)}
+                                          className="btn btn-secondary"
+                                          style={{ marginRight: '5px' }}
+                                        >
+                                          {t('common.edit')}
+                                        </button>
+                                      )}
+                                      {hasPermission('delete_users') && (
+                                        <button
+                                          onClick={() => handleDelete(user.id)}
+                                          className="btn btn-danger"
+                                        >
+                                          {t('common.delete')}
+                                        </button>
+                                      )}
                           </div>
                         </td>
                       )}
@@ -190,76 +192,76 @@ const Users = () => {
               </table>
               </div>
             </div>
-          ) : (
-            <div className="dynamic-section">
-              <p>You don't have permission to view the user list.</p>
-            </div>
-          )}
-        </div>
+                  ) : (
+                    <div className="dynamic-section">
+                      <p>{t('users.noPermission')}</p>
+                    </div>
+                  )}
+                </div>
 
-        {showModal && (
-          <div className="modal-overlay" onClick={() => setShowModal(false)}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <h2>{editingUser ? 'Edit User' : 'Create User'}</h2>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label>Username</label>
-                  <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Password {editingUser && '(leave blank to keep current)'}</label>
-                  <input
-                    type="password"
-                    value={formData.password}
-                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    required={!editingUser}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Role</label>
-                  <select
-                    value={formData.role_id}
-                    onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
-                    required
-                  >
-                    <option value="">Select a role</option>
-                    {roles.map((role) => (
-                      <option key={role.id} value={role.id}>
-                        {role.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="modal-actions">
-                  <button type="submit" className="btn btn-primary">
-                    {editingUser ? 'Update' : 'Create'}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="btn btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
+                {showModal && (
+                  <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                      <h2>{editingUser ? t('users.editUser') : t('users.createUser')}</h2>
+                      <form onSubmit={handleSubmit}>
+                        <div className="form-group">
+                          <label>{t('users.username')}</label>
+                          <input
+                            type="text"
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>{t('users.email')}</label>
+                          <input
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            required
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>{t('users.password')} {editingUser && `(${t('users.leaveBlank')})`}</label>
+                          <input
+                            type="password"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            required={!editingUser}
+                          />
+                        </div>
+                        <div className="form-group">
+                          <label>{t('users.role')}</label>
+                          <select
+                            value={formData.role_id}
+                            onChange={(e) => setFormData({ ...formData, role_id: e.target.value })}
+                            required
+                          >
+                            <option value="">{t('users.selectRole')}</option>
+                            {roles.map((role) => (
+                              <option key={role.id} value={role.id}>
+                                {role.name}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="modal-actions">
+                          <button type="submit" className="btn btn-primary">
+                            {editingUser ? t('common.update') : t('common.create')}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowModal(false)}
+                            className="btn btn-secondary"
+                          >
+                            {t('common.cancel')}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                )}
       </div>
     </div>
   )

@@ -1,10 +1,13 @@
 import { Outlet, Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuth } from '../context/AuthContext'
 import ThemeToggle from './ThemeToggle'
+import LanguageSwitcher from './LanguageSwitcher'
 import './Layout.css'
 
 const Layout = () => {
   const { user, logout, hasPermission } = useAuth()
+  const { t } = useTranslation()
   const location = useLocation()
 
   const isActive = (path) => location.pathname === path
@@ -14,21 +17,21 @@ const Layout = () => {
       <nav className="navbar">
         <div className="nav-container">
           <div className="nav-brand">
-            <h2>Full-Stack App</h2>
+            <h2>{t('nav.appName')}</h2>
           </div>
           <div className="nav-menu">
             <Link
               to="/dashboard"
               className={`nav-link ${isActive('/dashboard') ? 'active' : ''}`}
             >
-              Dashboard
+              {t('nav.dashboard')}
             </Link>
             {hasPermission('view_users') && (
               <Link
                 to="/users"
                 className={`nav-link ${isActive('/users') ? 'active' : ''}`}
               >
-                Users
+                {t('nav.users')}
               </Link>
             )}
             {hasPermission('view_roles') && (
@@ -36,29 +39,30 @@ const Layout = () => {
                 to="/roles"
                 className={`nav-link ${isActive('/roles') ? 'active' : ''}`}
               >
-                Roles
+                {t('nav.roles')}
               </Link>
             )}
             <Link
               to="/page1"
               className={`nav-link ${isActive('/page1') ? 'active' : ''}`}
             >
-              Page 1
+              {t('nav.page1')}
             </Link>
             <Link
               to="/page2"
               className={`nav-link ${isActive('/page2') ? 'active' : ''}`}
             >
-              Page 2
+              {t('nav.page2')}
             </Link>
             <Link
               to="/page3"
               className={`nav-link ${isActive('/page3') ? 'active' : ''}`}
             >
-              Page 3
+              {t('nav.page3')}
             </Link>
           </div>
           <div className="nav-user">
+            <LanguageSwitcher />
             <ThemeToggle />
             <Link
               to="/profile"
@@ -66,11 +70,11 @@ const Layout = () => {
               style={{ textDecoration: 'none' }}
             >
               <span className="user-info">
-                {user ? `${user.username} (${user.role})` : 'Loading...'}
+                {user ? `${user.username} (${user.role})` : t('common.loading')}
               </span>
             </Link>
             <button onClick={logout} className="btn btn-secondary">
-              Logout
+              {t('nav.logout')}
             </button>
           </div>
         </div>
